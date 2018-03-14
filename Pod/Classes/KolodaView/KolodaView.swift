@@ -90,6 +90,9 @@ open class KolodaView: UIView, DraggableCardDelegate {
     public var rotationMax: CGFloat?
     public var rotationAngle: CGFloat?
     public var scaleMin: CGFloat?
+    
+    //Drag direction constants
+    public var allowedDirections: [SwipeResultDirection]
 
     public var appearanceAnimationDuration = defaultAppearanceAnimationDuration
 

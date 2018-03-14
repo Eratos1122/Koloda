@@ -21,25 +21,37 @@ open class KolodaViewAnimator {
     }
     
     open func animateAppearance(_ duration: TimeInterval, completion: AnimationCompletionBlock = nil) {
-        let kolodaAppearScaleAnimation = POPBasicAnimation(propertyNamed: kPOPLayerScaleXY)
+        var appearanimation = [POPBasicAnimation]()
+        var alphaanimation = [POPBasicAnimation]()
+        let cards = (koloda?.subviews.count)!
+        let time = CACurrentMediaTime() + cardSwipeActionAnimationDuration
         
-        kolodaAppearScaleAnimation?.beginTime = CACurrentMediaTime() + cardSwipeActionAnimationDuration
-        kolodaAppearScaleAnimation?.duration = duration
-        kolodaAppearScaleAnimation?.fromValue = NSValue(cgPoint: CGPoint(x: 0.1, y: 0.1))
-        kolodaAppearScaleAnimation?.toValue = NSValue(cgPoint: CGPoint(x: 1.0, y: 1.0))
-        kolodaAppearScaleAnimation?.completionBlock = { (_, finished) in
-            completion?(finished)
+        for index in 0..<cards {
+            let move = POPBasicAnimation(propertyNamed: kPOPLayerPositionY)
+            move?.beginTime = time + (index == 0 ? 0 : 0.25)
+            move?.duration = 0.25 * Double(index + 1)
+            move?.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+            move?.fromValue = -212.0 + (index >= 1 ? 36 : 0) + (index == 2 ? 34 : 0)
+            appearanimation.append(move!)
+            
+            let alpha = POPBasicAnimation(propertyNamed: kPOPViewAlpha)
+            alpha?.beginTime = time + (index == 0 ? 0 : 0.25)
+            alpha?.duration = 0.25 * Double(index + 1)
+            alpha?.fromValue = 0.0
+            alpha?.toValue = pow(0.5, index)
+            alphaanimation.append(alpha!)
+            if(index == cards - 1) {
+                alpha?.completionBlock = {(_, finished) in
+                    completion?(finished)
+                }
+            }
         }
         
-        let kolodaAppearAlphaAnimation = POPBasicAnimation(propertyNamed: kPOPViewAlpha)
-        
-        kolodaAppearAlphaAnimation?.beginTime = CACurrentMediaTime() + cardSwipeActionAnimationDuration
-        kolodaAppearAlphaAnimation?.fromValue = NSNumber(value: 0.0)
-        kolodaAppearAlphaAnimation?.toValue = NSNumber(value: 1.0)
-        kolodaAppearAlphaAnimation?.duration = duration
-        
-        koloda?.pop_add(kolodaAppearAlphaAnimation, forKey: "kolodaAppearScaleAnimation")
-        koloda?.layer.pop_add(kolodaAppearScaleAnimation, forKey: "kolodaAppearAlphaAnimation")
+        for index in (0..<cards).reversed() {
+            let card = koloda?.subviews[index]
+            card?.pop_add(appearanimation[cards - index - 1], forKey: "kolodaFirstAppearMoveAnimation")
+            card?.pop_add(alphaanimation[cards - index - 1], forKey: "kolodaFirstAppearAlphaAnimation")
+        }
     }
     
     open func applyReverseAnimation(_ card: DraggableCardView, direction: SwipeResultDirection?, duration: TimeInterval, completion: AnimationCompletionBlock = nil) {

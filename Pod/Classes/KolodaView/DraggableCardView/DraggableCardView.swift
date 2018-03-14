@@ -29,6 +29,9 @@ protocol DraggableCardDelegate: class {
     func card(cardSwipeSpeed card: DraggableCardView) -> DragSpeed
 }
 
+//Drag direction constants
+private let defaultAllowedDirections: [SwipeResultDirection] = [.up, .down, .left, .right, .topLeft, .topRight, .bottomLeft, .bottomRight]
+
 //Drag animation constants
 private let defaultRotationMax: CGFloat = 1.0
 private let defaultRotationAngle = CGFloat(Double.pi) / 10.0
@@ -45,6 +48,9 @@ internal var cardSwipeActionAnimationDuration: TimeInterval = DragSpeed.default.
 
 public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
 
+    //Drag direction constants
+    public var allowedDirections = defaultAllowedDirections
+    
     //Drag animation constants
     public var rotationMax = defaultRotationMax
     public var rotationAngle = defaultRotationAngle
@@ -257,7 +263,16 @@ public class DraggableCardView: UIView, UIGestureRecognizerDelegate {
             updateOverlayWithFinishPercent(percentage, direction:dragDirection)
             if let dragDirection = dragDirection {
                 //100% - for proportion
-                delegate?.card(self, wasDraggedWithFinishPercentage: min(fabs(100 * percentage), 100), inDirection: dragDirection)
+                var percent = min(fabs(100 * percentage), 100)
+                if percent == 100 && !allowedDirections.contains(dragDirection) {
+                    percent = 0
+                }
+                
+                if percent == 0 {
+                    gestureRecognizer.state = .cancelled
+                } else {
+                    delegate?.card(self, wasDraggedWithFinishPercentage: percent, inDirection: dragDirection)
+                }
             }
             
         case .ended:
