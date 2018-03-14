@@ -1,8 +1,8 @@
 KolodaView [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) ![Swift 4.0.x](https://img.shields.io/badge/Swift-4.0.x-orange.svg)
 --------------
 
-![Preview](https://github.com/Yalantis/Koloda/blob/master/Koloda_v2_example_animation.gif)
-![Preview](https://github.com/Yalantis/Koloda/blob/master/Koloda_v1_example_animation.gif)
+![Preview](https://github.com/Eratos1122/Koloda/blob/master/Koloda_v2_example_animation.gif)
+![Preview](https://github.com/Eratos1122/Koloda/blob/master/Koloda_v1_example_animation.gif)
 
 Purpose
 --------------
